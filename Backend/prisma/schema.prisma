@@ -1,0 +1,110 @@
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  name           String
+  password       String
+  city           String
+  contact_number String
+  user_role      UserRole  @default(renter)
+  cars           Car[] // One-to-many relationship: A user can own multiple cars
+  bookings       Booking[] // One-to-many relationship: A user can make multiple bookings
+  created_at     DateTime  @default(now())
+  updated_at     DateTime  @default(now()) @updatedAt
+  is_deleted     Boolean   @default(false)
+}
+
+enum UserRole {
+  renter
+  owner
+  admin
+}
+
+model Car {
+  id                          Int         @id @default(autoincrement())
+  name                        String
+  rating                      String
+  city                        String
+  body                        String
+  capacity                    String
+  is_ac_car                   Boolean
+  luggage_capacity            String
+  is_available_to_rent        Boolean
+  rent_start_date_time        DateTime?
+  rent_end_date_time          DateTime?
+  price_per_km                Int
+  car_image                   String
+  car_owner                   User        @relation(fields: [car_owner_id], references: [id]) // Relation to User
+  car_owner_id                Int // Foreign key to reference the owner
+  availability_status         CarStatus
+  minimum_rental_hrs_duration String
+  minimum_rental_kms_duration String
+  insurance_included          Boolean
+  cancellation_policy         String
+  fuel_type                   CarFuelType
+  bookings                    Booking[] // One-to-many relationship: A car can have multiple bookings
+  created_at                  DateTime    @default(now())
+  updated_at                  DateTime    @updatedAt
+  is_deleted                  Boolean
+
+  @@index([availability_status])
+}
+
+enum CarStatus {
+  available
+  booked
+  maintenance
+  other
+}
+
+enum CarFuelType {
+  Diesel
+  petrol
+  electric
+}
+
+model Booking {
+  id      Int @id @default(autoincrement())
+  user_id Int
+  car_id  Int
+
+  // Relations
+  user User @relation(fields: [user_id], references: [id]) // Relation to User
+  car  Car  @relation(fields: [car_id], references: [id]) // Relation to Car
+
+  booking_start_date_time DateTime
+  booking_end_date_time   DateTime
+  total_kms_booked        Decimal
+  total_price             Decimal
+  payment_status          PaymentStatus @default(PENDING)
+  booking_status          BookingStatus @default(ACTIVE)
+  created_at              DateTime      @default(now())
+  updated_at              DateTime      @updatedAt
+  is_deleted              Boolean
+
+  @@unique([car_id, booking_start_date_time, booking_end_date_time])
+  @@index([user_id])
+  @@index([car_id])
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
