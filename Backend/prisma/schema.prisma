@@ -22,6 +22,8 @@ model User {
   created_at     DateTime  @default(now())
   updated_at     DateTime  @default(now()) @updatedAt
   is_deleted     Boolean   @default(false)
+
+  @@unique([email, contact_number]) // Composite unique constraint on both email and contact_number
 }
 
 enum UserRole {
@@ -33,7 +35,7 @@ enum UserRole {
 model Car {
   id                          Int         @id @default(autoincrement())
   name                        String
-  rating                      String
+  rating                      String?
   city                        String
   body                        String
   capacity                    String
