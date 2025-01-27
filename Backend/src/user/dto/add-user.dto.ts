@@ -8,7 +8,7 @@ import {
   IsNotEmpty,
 } from 'class-validator';
 
-import { UserRole } from '../user/user.role';
+import { UserRole } from '../user.role';
 
 export class UserReqDto {
   @IsNotEmpty() // Ensures this field is not empty
