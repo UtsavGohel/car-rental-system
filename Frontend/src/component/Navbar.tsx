@@ -1,10 +1,16 @@
-import { SetStateAction, useState } from "react";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setUserSearchData } from "../utils/reduxSlice/userSearch.slice";
 
 const Navbar = () => {
-  const [pickupLocation, setPickupLocation] = useState("Rajkot Airport");
-  const [pickupDate, setPickupDate] = useState("2025-01-25");
-  const [pickupTime, setPickupTime] = useState("12:30");
-  const [duration, setDuration] = useState("2hrs 20km");
+  const [formData, setFormData] = useState({
+    pickUpLocation: "rajkot",
+    pickUpDate: "2025-01-30",
+    pickUpTime: "11:30",
+    Duration: "10",
+  });
+
+  const dispatch = useDispatch();
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -12,46 +18,33 @@ const Navbar = () => {
     setIsLoggedIn(!isLoggedIn);
   };
 
-  const handleLocationChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setPickupLocation(e.target.value);
+  const handleChange = (e: { target: { name: string; value: string } }) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    console.log(`🚀 ~ file: Navbar.tsx:63 ~ handleChange ~ value:`, value);
+    console.log(`🚀 ~ file: Navbar.tsx:63 ~ handleChange ~ name:`, name);
   };
 
-  const handleDateChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    console.log(e.target.value);
-
-    setPickupDate(e.target.value);
-  };
-
-  const handleTimeChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setPickupTime(e.target.value);
-  };
-  const handleDurationChange = (e: {
-    target: { value: SetStateAction<string> };
-  }) => {
-    setDuration(e.target.value);
+  const handleSearch = () => {
+    dispatch(setUserSearchData(formData)); // Send complete form data to Redux
+    console.log("Search data dispatched:", formData);
   };
 
   return (
     <div>
       <nav className="bg-gray-800 text-white px-6 py-4 shadow-lg">
         <div className="container mx-auto flex justify-between items-center">
-          {/* Navigation Options */}
           <div className="hidden md:flex space-x-6 items-center">
             {/* Pickup Location */}
             <div className="relative">
               <label className="block text-sm font-medium text-gray-300">
-                Pickup Location
+                Pickup City
               </label>
               <input
                 type="text"
-                value={pickupLocation}
-                onChange={handleLocationChange}
+                name="pickUpLocation"
+                value={formData.pickUpLocation}
+                onChange={handleChange}
                 placeholder="Enter Location"
                 className="mt-2 px-4 py-2 rounded-md bg-white text-gray-800 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
@@ -64,8 +57,9 @@ const Navbar = () => {
               </label>
               <input
                 type="date"
-                value={pickupDate}
-                onChange={handleDateChange}
+                name="pickUpDate"
+                value={formData.pickUpDate}
+                onChange={handleChange}
                 className="mt-2 px-4 py-2 rounded-md bg-white text-gray-800 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
@@ -77,8 +71,9 @@ const Navbar = () => {
               </label>
               <input
                 type="time"
-                value={pickupTime}
-                onChange={handleTimeChange}
+                name="pickUpTime"
+                value={formData.pickUpTime}
+                onChange={handleChange}
                 className="mt-2 px-4 py-2 rounded-md bg-white text-gray-800 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               />
             </div>
@@ -89,21 +84,25 @@ const Navbar = () => {
                 Duration
               </label>
               <select
-                value={duration}
-                onChange={handleDurationChange}
-                className="mt-2 px-4 py-2 rounded-md bg-white text-gray-800 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                name="Duration"
+                value={formData.Duration}
+                onChange={handleChange}
+                className="mt-2 px-2 py-2 rounded-md bg-white text-gray-800 border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               >
-                <option value="1hrs 10km">1 hrs 10 km</option>
-                <option value="2hrs 20km">2 hrs 20 km</option>
-                <option value="3hrs 30km">3 hrs 30 km</option>
-                <option value="4hrs 40km">4 hrs 40 km</option>
-                <option value="5hrs 50km">5 hrs 50 km</option>
+                <option value="10km">10 km</option>
+                <option value="20km">20 km</option>
+                <option value="30km">30 km</option>
+                <option value="40km">40 km</option>
+                <option value="50km">50 km</option>
               </select>
             </div>
 
-            {/* Search Button */}
+            {/* Search Button (Only dispatches when clicked) */}
             <div className="relative">
-              <button className="mt-7 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 border border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none">
+              <button
+                onClick={handleSearch}
+                className="mt-7 px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-600 transition-all duration-200 border border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              >
                 Search
               </button>
             </div>
