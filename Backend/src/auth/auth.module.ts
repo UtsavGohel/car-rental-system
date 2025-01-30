@@ -9,7 +9,7 @@ import { AuthController } from './auth.controller';
   imports: [
     JwtModule.register({
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' }, // Token expires in 1 hour
+      signOptions: { expiresIn: '24h' }, // Token expires in 1 hour
     }),
   ],
   providers: [AuthService, JwtStrategy, PrismaService],
